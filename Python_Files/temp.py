@@ -27,6 +27,7 @@ def parse(filename):
       'h1': h1,
       'phone_number': phone_number
     })
+
     return results
 
 a = parse('temp.html')
