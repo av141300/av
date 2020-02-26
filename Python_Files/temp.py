@@ -1,52 +1,48 @@
 import requests
-from lxml import html
-from lxml import etree
-url = 'http://eurookna.ru'
-page = requests.get(url)
+from bs4 import BeautifulSoup
 
-with open('temp.html', 'w') as output_file:
-   output_file.write(str(page.text.encode('utf-8').strip()))
+url = 'https://www.eurookna.ru/okna/plastikovye-proizvoditelya/'
 
-def read_file(filename):
-    with open(filename) as input_file:
-        text = input_file.read()
-    return text
+def get_html(url):
+    r = requests.get(url)    # Получаем метод Response
+    r.encoding = 'utf8'      # У меня были проблемы с кодировкой, я задал в ручную
+    return r.text            # Вернем данные объекта text
 
-def parse(filename):
+def get_head(html):
+    soup = BeautifulSoup(html, 'lxml')
+    head = soup.find_all('h1')
+    heads = []
+    for i in head:
+       heads.append(i.string.strip())
+    return heads
+
+def parse(data):
     results = []
-    phone_number = '+79252234545' # один номер для всех страниц
+    soup = BeautifulSoup(data, 'lxml')
 
-    text = read_file(filename)
-    tree = html.fromstring(text)
-
-    title = tree.xpath('//title/text()')
-    h1 = tree.xpath('//h1/text()')
-
+    h1 = get_head(data)[0]
+    title = soup.title.string.strip()
     results.append({
-      'title' : title,
-      'h1': h1,
-      'phone_number': phone_number
+        'title': title,
+        'h1': h1,
     })
-
     return results
 
-a = parse('temp.html')
 
-for i in a:
-  h1 = str(i['h1'])
-  title = str(i['title'])
+data = get_html(url)
+a = parse(data)
 
 with open('temp.xml', 'w') as output_file:
     output_file.write(
         '''
 <?xml version="1.0" encoding="cp1251"?>
 <item turbo="true">
-    <title>'''+ title  +'''Заголовок страницы</title>
-    <link>https://okna-poz.ru</link>
+    <title>''' + a[0]['title'] + '''</title>
+    <link>'''+ url +'''</link>
     <turbo:content>
         <![CDATA[
             <header>
-                <h1>Ресторан «Полезный завтрак»</h1>
+                <h1>'''+ a[0]['h1'] +'''</h1>
                 <h2>Вкусно и полезно</h2>
                 <figure>
                     <img src="https://avatars.mds.yandex.net/get-sbs-sd/403988/e6f459c3-8ada-44bf-a6c9-dbceb60f3757/orig">
@@ -78,9 +74,9 @@ with open('temp.xml', 'w') as output_file:
             </div>
             <p>Наш адрес: <a href="#">Nullam dolor massa, porta a nulla in, ultricies vehicula arcu.</a></p>
             <p>Фотографии — http://unsplash.com</p>
-        ]]>   
+        ]]>
     </turbo:content>
-</item>       
- 
+</item>
+
         '''
     )
