@@ -1,7 +1,7 @@
 import requests, re
 from bs4 import BeautifulSoup
 site = 'https://www.eurookna.ru'
-url = 'https://www.eurookna.ru/balcony/plastikovye-balkon/'
+#url = 'https://www.eurookna.ru/balcony/plastikovye-balkon/'
 author = 'eurookna.ru'
 code = "cp1251"
 noimage = '/local/templates/201907/images/banner_2020_small.jpg'
@@ -96,20 +96,29 @@ def parse(data):
     })
     return results
 
-data = get_html(url)
-a = parse(data)
 
-#print(re.sub(r'\s+', ' ', str(get_seo_text(data))).strip())
+with open('urls.txt', 'r') as input_file:
+    urls = input_file.read().splitlines()
 
 with open('temp.xml', 'w') as output_file:
     output_file.write(
-
-'''<?xml version="1.0" encoding="'''+ code + '''"?>
+'''
+<?xml version="1.0" encoding="'''+ code + '''"?>
 <rss xmlns:yandex="http://news.yandex.ru" 
      xmlns:media="http://search.yahoo.com/mrss/" 
      xmlns:turbo="http://turbo.yandex.ru" 
      version="2.0">
-    <channel>       
+    <channel>  
+'''
+    )
+
+for url in urls:
+    data = get_html(url)
+    a = parse(data)
+    print(a)
+    with open('temp.xml', 'a') as output_file:
+        output_file.write(
+'''     
         <item turbo="true">
             <link>'''+ url +'''</link>
             <turbo:source>'''+ url +'''</turbo:source>
@@ -150,6 +159,11 @@ with open('temp.xml', 'w') as output_file:
                 ]]>
             </turbo:content>
         </item>
+'''
+        )
+with open('temp.xml', 'a') as output_file:
+    output_file.write(
+'''
     </channel>
 </rss>
 '''
