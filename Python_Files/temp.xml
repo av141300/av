@@ -5,41 +5,40 @@
      version="2.0">
     <channel>       
         <item turbo="true">
-            <link>https://www.eurookna.ru/okna/steklopaket-na-zakaz-bez-ramy/1213/</link>
-            <turbo:source>https://www.eurookna.ru/okna/steklopaket-na-zakaz-bez-ramy/1213/</turbo:source>
-            <turbo:topic>Стеклопакет без рамы на заказ за м2, заказать стеклопакет без рамы по размеру по низкой стоимости в Москве</turbo:topic>
+            <link>https://www.eurookna.ru/balcony/plastikovye-balkon/</link>
+            <turbo:source>https://www.eurookna.ru/balcony/plastikovye-balkon/</turbo:source>
+            <turbo:topic>Пластиковые окна на балкон или лоджию в Москве, остекление и стеклопакеты под ключ по низким ценам</turbo:topic>
             <author>eurookna.ru</author>
             <turbo:content>
                 <![CDATA[
                     <header>
-                        <h1>404</h1>
+                        <h1>Пластиковые окна на балкон</h1>
                         <figure>
-                            <img src="https://www.eurookna.ru/local/templates/201907/images/banner_2020_small.jpg">
+                            <img src="https://www.eurookna.ru/upload/iblock/168/168b15d66166035f05e78a5fdd015f8f.jpg">
                         </figure>
-                        <p></p>
-                        <menu>
-                           <a href="http://example.com/page1.html">53453</a>
-                           <a href="http://example.com/page2.html">2342</a>
-                        </menu>
+                        <p>Окна для балкона должны быть практичными, светлыми и надежными, поэтому ПВХ - оптимальный материал для изготовления таких конструкций. Для производства пластиковых окон на балкон мы используем немецкий профиль VEKA и стеклопакеты на базе стекла Guardian (США), а функциональность обеспечивается австрийской фурнитурой МАСО - качественные окна из проверенных комплектующих.</p>
+                        <button
+                          formaction="tel:+7(495)725-60-65"
+                          data-background-color="red"
+                          data-color="white"
+                          data-turbo="false"
+                          data-primary="true"
+                        >
+                        +7(495)725-60-65
+                        </button>
                     </header>
-                    <figure>
-                       <img src="https://avatars.mds.yandex.net/get-sbs-sd/369181/49e3683c-ef58-4067-91f9-786222aa0e65/orig">
-                        <figcaption></figcaption>
-                    </figure>
-                   
-                    <button formaction="tel:+7(123)456-78-90"
-                            data-background-color="#5B97B0"
-                            data-color="white"
-                            data-primary="true"></button>
-                    <div data-block="widget-feedback" data-stick="false">
-                        <div data-block="chat" data-type="whatsapp" data-url="https://whatsapp.com"></div>
-                        <div data-block="chat" data-type="telegram" data-url="http://telegram.com/"></div>
-                        <div data-block="chat" data-type="vkontakte" data-url="https://vk.com/"></div>
-                        <div data-block="chat" data-type="facebook" data-url="https://facebook.com"></div>
-                        <div data-block="chat" data-type="viber" data-url="https://viber.com"></div>
-                    </div>
-                    <p><a href="#">Nullam dolor massa, porta a nulla in, ultricies vehicula arcu.</a></p>
-                    <p>http://unsplash.com</p>
+                    <h2>Почему Евроокна</h2>
+                    <p>Компания “Евроокна” - старейший московский производитель окон с богатым опытом работы и широким ассортиментом. Благодаря оптимизации производства мы предлагаем вам качественную современную продукцию по доступным ценам. Наши главные ценности - надежность, практичность и стабильность, поэтому мы строго придерживаемся технологических стандартов и в производстве окон используем только комплектующие от известных производителей.</p>
+                    <div class="turbo-article"> <h2>Разнообразие вариантов</h2> <p> При выборе пластиковых окон на балкон обязательно учитываются не только потребности клиента и назначение помещения, но и состояние ограждения – оно должно выдержать оконные конструкции, которые могут иметь значительный вес. </p> <ul> <li> <p> Легкое остекление: обычно является холодным и производится на базе узкого ПВХ-профиля с установкой одинарного стекла или 1-камерного стеклопакета. </p> </li> <li> <p> Теплое остекление лоджии или балкона: создается на основе профиля с увеличенной монтажной глубиной с использованием теплого 2-камерного стеклопакета. Для повышения энергоэффективности остекления можно установить мультифункциональный стеклопакет – с такими окнами зимой будет теплее, а летом – прохладнее. </p> </li> </ul> <p> При необходимости наши специалисты укрепят основание балкона и проведут отделочные работы под ключ. У нас вы можете заказать индивидуальный дизайн-проект балкона или выбрать подходящий вариант из типовых решений. </p> <br/> </div>
+                    <button
+                          formaction="tel:+7(495)725-60-65"
+                          data-background-color="red"
+                          data-color="white"
+                          data-turbo="false"
+                          data-primary="true"
+                        >
+                        +7(495)725-60-65
+                    </button>
                 ]]>
             </turbo:content>
         </item>
