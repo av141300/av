@@ -90,13 +90,57 @@ def get_advantages_h2(html):
 def get_advantages(html):
     soup = BeautifulSoup(html, 'lxml')
     advantages = []
-    try:
-        all = soup.findAll('div', attrs={"class": "turbo-advantages-item-head"})
+    all = soup.findAll('div', attrs={"class": "turbo-advantages-item-head"})
+    if len(all) != 0:
         for i in range(len(all)):
             advantages.append([all[i].text.capitalize(), soup.findAll('p', attrs={"class" : "turbo-advantages-item-body"})[i].text])
-    except:
+    else:
         advantages = None
     return advantages
+
+def get_proizvodstvo_h2_text(html):
+    soup = BeautifulSoup(html, 'lxml')
+    proizvodstvo_h2_text = []
+    try:
+        proizvodstvo_h2_text = [soup.find('section', class_='turbo-proizvodstvo').find('h2').text.strip(), soup.find('section', class_='turbo-proizvodstvo').find('h2').findNext('p').text.strip()]
+    except:
+        proizvodstvo_h2_text = ['', '']
+    return proizvodstvo_h2_text
+
+def get_proizvodstvo(html):
+    soup = BeautifulSoup(html, 'lxml')
+    proizvodstvo = []
+    all_proizv = soup.findAll('div', attrs={"class": "turbo-proizvodstvo-item"})
+    if len(all_proizv) != 0:
+        for i in all_proizv:
+            try:
+                txt = i.find('p').text
+            except:
+                txt = ''
+            proizvodstvo.append([i.find('h3').text, txt, i.find('img')['src']])
+    else:
+        proizvodstvo = []
+    return proizvodstvo
+
+def get_gallery_h2(html):
+    soup = BeautifulSoup(html, 'lxml')
+    try:
+        soup.find('div', attrs={"id": "gallery-slideshow"})
+        gallery_h2 = soup.find('div', attrs={"id": "gallery-slideshow"}).findPrevious('h2').text
+    except:
+        gallery_h2 = None
+    return gallery_h2
+
+def get_gallery(html):
+    soup = BeautifulSoup(html, 'lxml')
+    gallery = []
+    try:
+        photos = soup.find('div', attrs={"id": "gallery-slideshow"}).findAll('li')
+        for i in photos:
+            gallery.append(i.find('img')['data-src'])
+    except:
+        gallery = None
+    return gallery
 
 # Собираем данные
 
@@ -113,8 +157,12 @@ def parse(data):
     small_seo_text = if_empty_p(get_small_seo_text(data))
     seo_text = if_empty_p(str(get_seo_text(data)))
     price = if_empty_p(str(get_price(data)))
+    proizvodstvo_h2_text = get_proizvodstvo_h2_text(data)
+    proizvodstvo = get_proizvodstvo(data)
     advantages_h2 = if_empty_p(str(get_advantages_h2(data)))
     advantages = get_advantages(data)
+    gallery_h2 = get_gallery_h2(data)
+    gallery = get_gallery(data)
     results.append({
         'title': title,
         'h1': h1,
@@ -126,7 +174,11 @@ def parse(data):
         'seo_text' : seo_text,
         'price' : price,
         'advantages_h2' : advantages_h2,
-        'advantages' : advantages
+        'advantages' : advantages,
+        'proizvodstvo' : proizvodstvo,
+        'proizvodstvo_h2_text' : proizvodstvo_h2_text,
+        'gallery_h2' : gallery_h2,
+        'gallery' : gallery
     })
     return results
 
@@ -135,7 +187,7 @@ with open('urls.txt', 'r') as input_file:
     urls = input_file.read().splitlines()
 
 with open('temp.xml', 'w') as output_file:
-    output_file.write(
+    output_file.write( # записываем начало документа
 '''
 <?xml version="1.0" encoding="'''+ code + '''"?>
 <rss xmlns:yandex="http://news.yandex.ru" 
@@ -146,16 +198,12 @@ with open('temp.xml', 'w') as output_file:
 '''
     )
 
-for url in urls:
+for url in urls: # зперечисляем все URL в списке
     data = get_html(url)
     a = parse(data)
-    print(url)
-    #print(get_advantages(data))
-    # soup = BeautifulSoup(data, 'lxml')
-    # print(soup.find('section', class_='turbo-advantages'))
-
-    with open('temp.xml', 'a') as output_file:
-        output_file.write(
+    print(url) # оставим для отображения процесса
+    output_file = open('temp.xml', 'a')
+    output_file.write(# записываем стандартное начало страницы
 '''     
         <item turbo="true">
             <link>'''+ url +'''</link>
@@ -167,11 +215,25 @@ for url in urls:
                     <header>
                         <h1>'''+ a[0]['h1'] +'''</h1>
                         <figure>
-                            <img src="''' + site + a[0]['main_image_url'][0] + '''">
+                            <img src="''' + site + a[0]['main_image_url'][0] + '''" />
                         </figure>
                     </header>
+'''
+    )
+    if  a[0]['preview_text'] != '':
+        output_file.write( # если есть блок с данным текстом то выводим жтот текст
+'''            
                     <p>'''+ a[0]['preview_text'] +'''</p>
+'''
+        )
+    if a[0]['price'] != '':
+        output_file.write( # если указана цена то выводим
+'''            
                     <p><big>'''+ a[0]['price'] +'''</big></p>
+'''
+        )
+    output_file.write( # всегда выводим эту кнопку
+'''        
                     <button
                           formaction="tel:'''+ re.sub(r'\s+', '', phone) +'''"
                           data-background-color="red"
@@ -181,8 +243,19 @@ for url in urls:
                         >
                         Заказать
                     </button>
+'''
+    )
+    if a[0]['small_seo_text_h2'] != '':
+
+        output_file.write( # если есть короткий сео-текст выводим
+'''            
                     <h2>'''+ a[0]['small_seo_text_h2'] +'''</h2>
                     <p>''' + a[0]['small_seo_text'] + '''</p>
+'''
+        )
+    if a[0]['seo_text'] != '':
+        output_file.write(  # если есть сео-текст выводим вместе с кнопкой
+'''
                     '''+ a[0]['seo_text'] +'''
                     <button
                           formaction="tel:'''+ re.sub(r'\s+', '', phone) +'''"
@@ -194,29 +267,79 @@ for url in urls:
                         '''+ phone +
                         '''
                     </button>
-                    <h2>'''+ a[0]['advantages_h2'] +'''</h2>'''
-        )
-
-    for adv in a[0]['advantages']:
-        with open('temp.xml', 'a') as output_file:
-            output_file.write(
 '''
-                    <h3>'''+ adv[0] +'''</h3>
+        )
+    if  a[0]['advantages'] != None:
+        output_file.write( # если есть преимущества выводим
+'''            
+                    <h2>'''+ a[0]['advantages_h2'] +'''</h2>
+'''
+        )
+        for adv in a[0]['advantages']:
+            output_file.write( # перечисляем преимущества
+
+'''
+                    <h3>''' + adv[0] + '''</h3>
                     <p>''' + adv[1] + '''</p>                    
 '''
             )
-    with open('temp.xml', 'a') as output_file:
-        output_file.write(
-                '''
+    if a[0]['proizvodstvo_h2_text'] != ['', '']:
+        output_file.write( # если есть блок про производство выводим
+'''
+                    <h2>''' + a[0]['proizvodstvo_h2_text'][0] + '''</h2>
+                    <p>''' + a[0]['proizvodstvo_h2_text'][1] + '''</p>
+'''
+        )
+        for pr in a[0]['proizvodstvo']:
+            output_file.write( # перечисляем этапы производства
+'''
+                    <img src="''' + pr[2] + '''" alt="" />    
+                    <h3>''' + pr[0] + '''</h3>
+                    <p>''' + pr[1] + '''</p>      
+                                  
+'''
+            )
+    if a[0]['gallery'] != None:
+        output_file.write(  # Блок с галереей работ>
+'''
+                    <h2>'''+ a[0]['gallery_h2'] +'''</h2>
+                    <div data-block="gallery">
+'''
+        )
+        for img in a[0]['gallery']:
+            output_file.write( # Перечисляем фотографии
+'''
+                        <img src="'''+ img +'''" />
+'''
+            )
+        output_file.write(  # конец галереи
+'''        
+                        <header>'''+ a[0]['gallery_h2'] +'''</header>
+                    </div>
+'''
+            )
+    output_file.write( # статический блок с сертификатами
+'''
+                    <h2>Дипломы и сертификаты</h2>
+                    <div data-block="gallery">
+                        <img src="https://www.eurookna.ru/upload/medialibrary/213/213fd72919cac2de5a7b3dc5298d244d.jpg" />
+                        <img src="https://www.eurookna.ru/upload/medialibrary/d3d/d3dafa43d3f0661d10072f159421b817.jpg" />
+                        <img src="https://www.eurookna.ru/upload/medialibrary/4f5/4f56adb7ab8d8d9e4a4b2345943dd8b5.jpg" />
+                        <img src="https://www.eurookna.ru/upload/medialibrary/8f6/8f6c4a7200a078934dcde2c4275bd04e.jpg" />
+                        <img src="https://www.eurookna.ru/upload/medialibrary/92a/92a9446f9e715599a6da33c76e4e8e87.jpg" />
+                        <img src="https://www.eurookna.ru/upload/medialibrary/ad4/ad46ff3cc64f997214dc3edd8cc6c994.jpg" />
+                        <header>Дипломы и сертификаты</header>
+                    </div>
                 ]]>
             </turbo:content>
         </item>
 '''
-        )
-with open('temp.xml', 'a') as output_file:
-    output_file.write(
+    )
+
+output_file.write(
 '''
     </channel>
 </rss>
 '''
-    )
+)
+output_file.close()
