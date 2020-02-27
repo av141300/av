@@ -93,7 +93,11 @@ def get_advantages(html):
     all = soup.findAll('div', attrs={"class": "turbo-advantages-item-head"})
     if len(all) != 0:
         for i in range(len(all)):
-            advantages.append([all[i].text.capitalize(), soup.findAll('p', attrs={"class" : "turbo-advantages-item-body"})[i].text])
+            try:
+                txt = soup.findAll('p', attrs={"class" : "turbo-advantages-item-body"})[i].text
+            except:
+                txt = ''
+            advantages.append([all[i].text.capitalize(), txt])
     else:
         advantages = None
     return advantages
@@ -197,11 +201,12 @@ with open('temp.xml', 'w') as output_file:
     <channel>  
 '''
     )
-
+x = 0
 for url in urls: # зперечисляем все URL в списке
     data = get_html(url)
     a = parse(data)
-    print(url) # оставим для отображения процесса
+    x += 1
+    print(x, url) # оставим для отображения процесса
     output_file = open('temp.xml', 'a')
     output_file.write(# записываем стандартное начало страницы
 '''     
@@ -279,23 +284,28 @@ for url in urls: # зперечисляем все URL в списке
             output_file.write( # перечисляем преимущества
 
 '''
-                    <h3>''' + adv[0] + '''</h3>
-                    <p>''' + adv[1] + '''</p>                    
+                    <h3>''' + if_empty_p(adv[0]).strip().capitalize() + '''</h3>
 '''
             )
+            if adv[1] != '':
+                output_file.write(
+'''                    
+                    <p>''' + if_empty_p(adv[1]).strip() + '''</p>                    
+'''
+                )
     if a[0]['proizvodstvo_h2_text'] != ['', '']:
         output_file.write( # если есть блок про производство выводим
 '''
-                    <h2>''' + a[0]['proizvodstvo_h2_text'][0] + '''</h2>
-                    <p>''' + a[0]['proizvodstvo_h2_text'][1] + '''</p>
+                    <h2>''' + if_empty_p(a[0]['proizvodstvo_h2_text'][0]).strip() + '''</h2>
+                    <p>''' + if_empty_p(a[0]['proizvodstvo_h2_text'][1]).strip() + '''</p>
 '''
         )
         for pr in a[0]['proizvodstvo']:
             output_file.write( # перечисляем этапы производства
 '''
                     <img src="''' + pr[2] + '''" alt="" />    
-                    <h3>''' + pr[0] + '''</h3>
-                    <p>''' + pr[1] + '''</p>      
+                    <h3>''' + if_empty_p(pr[0]).strip().capitalize() + '''</h3>
+                    <p>''' + if_empty_p(pr[1]).strip() + '''</p>      
                                   
 '''
             )
@@ -330,6 +340,36 @@ for url in urls: # зперечисляем все URL в списке
                         <img src="https://www.eurookna.ru/upload/medialibrary/ad4/ad46ff3cc64f997214dc3edd8cc6c994.jpg" />
                         <header>Дипломы и сертификаты</header>
                     </div>
+                    <h2>Отзывы клиентов</h2>
+                    <h3>250 000 клиентов уже выбрали наши окна</h3>
+                    <p>Каждый месяц мы проводим исследование индекса удовлетворенности клиентов нашей работой. 
+                    Оценка проводится на основании качественных показателей в составе комплексного опроса по 10-бальной шкале.</p>
+                    <div data-block="slider" data-view="landscape">
+                        <figure>
+                            <figcaption>Отзыв клиента договор №183818</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-1.jpg"/>
+                        </figure>
+                        <figure>
+                            <figcaption>Отзыв клиента договор №182644</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-2.jpg"/>
+                        </figure>
+                        <figure>
+                            <figcaption>Отзыв клиента договор №180838/1</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-3.jpg"/>
+                        </figure>																
+                        <figure>
+                            <figcaption>Отзыв клиента договор №180948</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-4.jpg"/>
+                        </figure>
+                        <figure>
+                            <figcaption>Отзыв клиента договор №181164</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-5.jpg"/>
+                        </figure>	
+                        <figure>
+                            <figcaption>Отзыв клиента договор №182882</figcaption>
+                            <img src="https://www.eurookna.ru/local/templates/201907/images/review-image-6.jpg"/>
+                        </figure>																							
+                    </div>                    
                 ]]>
             </turbo:content>
         </item>
