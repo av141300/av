@@ -5,7 +5,7 @@ site = 'https://www.eurookna.ru'
 author = 'eurookna.ru'
 code = "cp1251"
 noimage = '/local/templates/201907/images/banner_2020_small.jpg'
-phone = '+7(495)725-60-65'
+phone = '+7 (495) 137-06-32'
 
 def get_html(url):
     r = requests.get(url)    # Получаем метод Response
@@ -65,10 +65,38 @@ def if_empty_p(text):
 def get_seo_text(html):
     soup = BeautifulSoup(html, 'lxml')
     try:
+        soup.find('div', class_='turbo-article').text.strip()
         seo_text = soup.find('div', class_='turbo-article')
     except:
         seo_text = ''
     return seo_text
+
+def get_price(html):
+    soup = BeautifulSoup(html, 'lxml')
+    try:
+        price = soup.find('p', class_='turbo-price').text.strip()
+    except:
+        price = ''
+    return price
+
+def get_advantages_h2(html):
+    soup = BeautifulSoup(html, 'lxml')
+    try:
+        advantages_h2 = soup.find('section', class_='turbo-advantages').find('h2').text.strip()
+    except:
+        advantages_h2 = ''
+    return advantages_h2
+
+def get_advantages(html):
+    soup = BeautifulSoup(html, 'lxml')
+    advantages = []
+    try:
+        all = soup.findAll('div', attrs={"class": "turbo-advantages-item-head"})
+        for i in range(len(all)):
+            advantages.append([all[i].text.capitalize(), soup.findAll('p', attrs={"class" : "turbo-advantages-item-body"})[i].text])
+    except:
+        advantages = None
+    return advantages
 
 # Собираем данные
 
@@ -84,6 +112,9 @@ def parse(data):
     small_seo_text_h2 = get_small_seo_text_h2(data)
     small_seo_text = if_empty_p(get_small_seo_text(data))
     seo_text = if_empty_p(str(get_seo_text(data)))
+    price = if_empty_p(str(get_price(data)))
+    advantages_h2 = if_empty_p(str(get_advantages_h2(data)))
+    advantages = get_advantages(data)
     results.append({
         'title': title,
         'h1': h1,
@@ -92,7 +123,10 @@ def parse(data):
         'preview_text' : preview_text,
         'small_seo_text_h2' : small_seo_text_h2,
         'small_seo_text' : small_seo_text,
-        'seo_text' : seo_text
+        'seo_text' : seo_text,
+        'price' : price,
+        'advantages_h2' : advantages_h2,
+        'advantages' : advantages
     })
     return results
 
@@ -115,7 +149,11 @@ with open('temp.xml', 'w') as output_file:
 for url in urls:
     data = get_html(url)
     a = parse(data)
-    print(a)
+    print(url)
+    #print(get_advantages(data))
+    # soup = BeautifulSoup(data, 'lxml')
+    # print(soup.find('section', class_='turbo-advantages'))
+
     with open('temp.xml', 'a') as output_file:
         output_file.write(
 '''     
@@ -131,23 +169,23 @@ for url in urls:
                         <figure>
                             <img src="''' + site + a[0]['main_image_url'][0] + '''">
                         </figure>
-                        <p>'''+ a[0]['preview_text'] +'''</p>
-                        <button
-                          formaction="tel:'''+ phone +'''"
+                    </header>
+                    <p>'''+ a[0]['preview_text'] +'''</p>
+                    <p><big>'''+ a[0]['price'] +'''</big></p>
+                    <button
+                          formaction="tel:'''+ re.sub(r'\s+', '', phone) +'''"
                           data-background-color="red"
                           data-color="white"
                           data-turbo="false"
                           data-primary="true"
                         >
-                        '''+ phone +
-                        '''
-                        </button>
-                    </header>
+                        Заказать
+                    </button>
                     <h2>'''+ a[0]['small_seo_text_h2'] +'''</h2>
                     <p>''' + a[0]['small_seo_text'] + '''</p>
                     '''+ a[0]['seo_text'] +'''
                     <button
-                          formaction="tel:'''+ phone +'''"
+                          formaction="tel:'''+ re.sub(r'\s+', '', phone) +'''"
                           data-background-color="red"
                           data-color="white"
                           data-turbo="false"
@@ -156,6 +194,20 @@ for url in urls:
                         '''+ phone +
                         '''
                     </button>
+                    <h2>'''+ a[0]['advantages_h2'] +'''</h2>'''
+        )
+
+    for adv in a[0]['advantages']:
+        with open('temp.xml', 'a') as output_file:
+            output_file.write(
+'''
+                    <h3>'''+ adv[0] +'''</h3>
+                    <p>''' + adv[1] + '''</p>                    
+'''
+            )
+    with open('temp.xml', 'a') as output_file:
+        output_file.write(
+                '''
                 ]]>
             </turbo:content>
         </item>
