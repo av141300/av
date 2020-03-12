@@ -192,8 +192,7 @@ with open('urls.txt', 'r') as input_file:
 
 with open('temp.xml', 'w') as output_file:
     output_file.write( # записываем начало документа
-'''
-<?xml version="1.0" encoding="'''+ code + '''"?>
+'''<?xml version="1.0" encoding="'''+ code + '''"?>
 <rss xmlns:yandex="http://news.yandex.ru" 
      xmlns:media="http://search.yahoo.com/mrss/" 
      xmlns:turbo="http://turbo.yandex.ru" 
@@ -209,8 +208,7 @@ for url in urls: # зперечисляем все URL в списке
     print(x, url) # оставим для отображения процесса
     output_file = open('temp.xml', 'a')
     output_file.write(# записываем стандартное начало страницы
-'''     
-        <item turbo="true">
+'''    <item turbo="true">
             <link>'''+ url +'''</link>
             <turbo:source>'''+ url +'''</turbo:source>
             <turbo:topic>''' + a[0]['title'] + '''</turbo:topic>
