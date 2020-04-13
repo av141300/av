@@ -261,7 +261,7 @@ for url in urls:  # зперечисляем все URL в списке
  	</header>
     <article>
         <h1>''' + a[0]['h1'] + '''</h1>
-        <amp-img src="''' + site + a[0]['main_image_url'][0] + '''" layout="responsive" width=" 266 " height=" 150 "></amp-img>'''
+        <amp-img src="''' + site + a[0]['main_image_url'][0] + '''" layout="responsive" width="266" height="150"></amp-img>'''
     )
     if a[0]['preview_text'] != '':
         output_file.write(  # если есть блок с данным текстом то выводим жтот текст
