@@ -229,7 +229,7 @@ for url in urls:  # зперечисляем все URL в списке
         <link rel="canonical" href="'''+ url +'''">
         <link rel= "shortcut icon" href= "amp_favicon.png">
         <title>'''+  a[0]['title'] + '''</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
         <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
         <style amp-custom>
         html {
@@ -848,6 +848,7 @@ for url in urls:  # зперечисляем все URL в списке
             }
 	    </style>
         <script async src= "https://cdn.ampproject.org/v0.js"></script>
+        <script async custom-element="amp-carousel" src="https://cdn.ampproject.org/v0/amp-carousel-0.1.js"></script>
     </head>
     <body>
         <div id="nav">
@@ -860,14 +861,6 @@ for url in urls:  # зперечисляем все URL в списке
                         </svg>
                     </a>
                 </div>
-                <div class="nav__logo">
-                    <a href="/">
-                        <img width="80" src="https://www.eurookna.ru/local/templates/201907/images/eurookna-logo.svg">
-                    </a>
-                </div>
-                <p class="nav__age">Нам <span>24</span> года</p>
-                <p><a class="button button--nav" href="">Заказать звонок</a></p>
-                <p><a class="button button--nav" href="">Вызвать замерщика</a></p>
                 <p class="nav__phone"><a href="tel:''' + re.sub(r'\s+', '', phone) + '''">''' + re.sub(r'\s+', '', phone) + '''</span></a><i>прием заявок круглосуточно</i></p>
                 <p class="nav__links">
                     <a href="https://www.eurookna.ru/">Пластиковые окна</a><br>
@@ -875,7 +868,6 @@ for url in urls:  # зперечисляем все URL в списке
                     <a href="https://www.eurookna.ru/derevyannye-okna/">Деревянные окна</a><br>
                     <a href="https://www.eurookna.ru/teplyy-alyuminiy/">Теплый алюминий</a><br>
                     <a href="https://www.eurookna.ru/calculation/#calcform">Рассчитать стоимость</a><br>
-                    <a href="https://www.eurookna.ru/okna/plastikovye-zavod/#contact">Контакты</a>
                 </p>
             </div>
         </div>
@@ -898,7 +890,7 @@ for url in urls:  # зперечисляем все URL в списке
                             <div class="logo">
                                 <div class="logo__inner">
                                     <a href="/">
-                                        <img width="55" src="https://www.eurookna.ru/local/templates/201907/images/eurookna-logo.svg">
+                                        <amp-img width="55" height="53" src="https://www.eurookna.ru/local/templates/201907/images/eurookna-logo.svg"></amp-img>
                                     </a>
                                 </div>
                             </div>
@@ -919,7 +911,7 @@ for url in urls:  # зперечисляем все URL в списке
         <article>          
             <div class="section banner">
                 <div class="container">
-                    <amp-img src="''' + site + a[0]['main_image_url'][0] + '''" layout="responsive" width="266" height="150"></amp-img>
+                    <amp-img src="''' + site + a[0]['main_image_url'][0] + '''" layout="responsive" width="266" height="100"></amp-img>
                     <h1>''' + a[0]['h1'] + '''</h1>
                     '''
     )
@@ -944,24 +936,34 @@ for url in urls:  # зперечисляем все URL в списке
             </div>
         </article>
         <div class="section steps">
-            <div class="container">
+            <div class="container">'''
+    )
+    if a[0]['small_seo_text_h2'] != '':
+        output_file.write(
+            '''  
                 <h2>''' + a[0]['small_seo_text_h2'] + '''</h2>
                 <p>''' + a[0]['small_seo_text'] + '''</p>
                 '''
     )
     if a[0]['seo_text'] != '':
         output_file.write(  # если есть сео-текст выводим
-            a[0]['seo_text']
+            a[0]['seo_text'] +
+            '''
+            </div>
+        </div>
+        <div class="section steps">
+            <div class="container">'''
         )
     if a[0]['advantages'] != None:
         output_file.write(  # если есть преимущества выводим
-            '''<h2>''' + a[0]['advantages_h2'] + '''</h2>
             '''
+                <h2>''' + a[0]['advantages_h2'] + '''</h2>
+                '''
         )
         for adv in a[0]['advantages']:
             output_file.write(  # перечисляем преимущества
-            '''<h3>''' + if_empty_p(adv[0]).strip().capitalize() + '''</h3>
-            '''
+                '''<h3>''' + if_empty_p(adv[0]).strip().capitalize() + '''</h3>
+                '''
             )
             if adv[1] != '':
                 output_file.write(
@@ -969,49 +971,53 @@ for url in urls:  # зперечисляем все URL в списке
                 '''
                 )
     output_file.write(
-    '''
+            '''
             </div>
         </div>
+        '''
+    )
+    if a[0]['gallery'] != None:
+        output_file.write(  # Блок с галереей работ>
+        '''
         <div class="section sert">
             <div class="container">
+                <h2>''' + a[0]['gallery_h2'] + '''</h2>
+                <amp-carousel layout="responsive" width="300" height="168" type="slides" loop>
+                    '''
+        )
+        for img in a[0]['gallery']:
+            output_file.write(  # Перечисляем фотографии
+                    '''<amp-img src="https://www.eurookna.ru''' + img + '''" width="300" height="168" layout="responsive"></amp-img>
+                    '''
+            )
+        output_file.write(
+            '''
+                </amp-carousel>
+            </div>
+        </div>
+        '''
+        )
+    output_file.write(  # конец галереи
+    '''<div class="section sert">
+            <div class="container">
                 <h2>Дипломы и сертификаты</h2>
-                <div class="row">
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/8f6/8f6c4a7200a078934dcde2c4275bd04e.jpg" alt="Премия «Золотое окно 2018»">
-                        <p>Премия «Золотое окно 2018»</p>
-                    </div>
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/92a/92a9446f9e715599a6da33c76e4e8e87.jpg" alt="Сертификат VEKA">
-                        <p>Сертификат VEKA</p>
-                    </div>
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/ad4/ad46ff3cc64f997214dc3edd8cc6c994.jpg" alt="Премия «Золотое окно 2016»">
-                        <p>Премия «Золотое окно 2016» asdf asdf asdf asdfsd</p>
-                    </div>
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/213/213fd72919cac2de5a7b3dc5298d244d.jpg" alt="Свидетельство от МФЗП лауреату «Лучшие в Москве»">
-                        <p>Свидетельство от МФЗП лауреату «Лучшие в Москве»</p>
-                    </div>
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/d3d/d3dafa43d3f0661d10072f159421b817.jpg" alt="Премия «Золотое окно 2014»">
-                        <p>Премия «Золотое окно 2014»</p>
-                    </div>
-                    <div class="col col--2 col--s3">
-                        <img src="https://www.eurookna.ru/upload/medialibrary/4f5/4f56adb7ab8d8d9e4a4b2345943dd8b5.jpg" alt="Свидетельство от МФЗП лауреату «Лучшие в Москве»">
-                        <p>Свидетельство от МФЗП лауреату «Лучшие в Москве»</p>
-                    </div>
+                <amp-carousel layout="responsive" width="300" height="168" type="slides" loop>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/8f6/8f6c4a7200a078934dcde2c4275bd04e.jpg" width="300" height="168" layout="responsive"></amp-img>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/92a/92a9446f9e715599a6da33c76e4e8e87.jpg" width="300" height="168" layout="responsive"></amp-img>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/ad4/ad46ff3cc64f997214dc3edd8cc6c994.jpg" width="300" height="168" layout="responsive"></amp-img>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/213/213fd72919cac2de5a7b3dc5298d244d.jpg" width="300" height="168" layout="responsive"></amp-img>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/d3d/d3dafa43d3f0661d10072f159421b817.jpg" width="300" height="168" layout="responsive"></amp-img>
+                  <amp-img src="https://www.eurookna.ru/upload/medialibrary/4f5/4f56adb7ab8d8d9e4a4b2345943dd8b5.jpg" width="300" height="168" layout="responsive"></amp-img>
+                </amp-carousel>
                 </div>
             </div>
         </div> 
         <div class="container map">
-            <img src="img/map.jpg" alt="">
             <div class="section">
                 <div class="container">
                     <div class="map__info">
                         <p class="map__head">Адрес центрального офиса продаж:</p>
-                        <p class="map__text">127006, г. Москва, м. Новослободская, <br> ул. Долгоруковская, д. 21, стр. 1, этаж 3, офис 303, <br> тел.: +7 495 725-60-65 (круглосуточно).</p>
-                        <p><a href="" class="button">Схема проезда</a></p>
-                        <p><a href="" class="button">Задать вопрос</a></p>
+                        <p class="map__text">127006, г. Москва, м. Новослободская, <br> ул. Долгоруковская, д. 21, стр. 1, этаж 3, офис 303, <br> тел.: <a href="tel:''' + re.sub(r'\s+', '', phone) + '''">''' + re.sub(r'\s+', '', phone) + '''</a>  (круглосуточно).</p>
                     </div>
                 </div>
             </div>
@@ -1041,7 +1047,6 @@ for url in urls:  # зперечисляем все URL в списке
                                 </p>
                                 <p>
                                     <a class="footer__phone" href="tel:''' + re.sub(r'\s+', '', phone) + '''">''' + re.sub(r'\s+', '', phone) + '''</span></a>
-                                    <a class="footer__btn" href="">Заказать звонок</a>
                                 </p>
                                 <p>127006, г. Москва, <br> м. Новослободская, <br> ул. Долгоруковская, д. 21, <br> стр. 1, этаж 3, офис 303.</p>
                             </div>
@@ -1052,28 +1057,25 @@ for url in urls:  # зперечисляем все URL в списке
                                     <li><a href="https://www.eurookna.ru/derevyannye-okna/">Деревянные окна</a></li>
                                     <li><a href="https://www.eurookna.ru/teplyy-alyuminiy/">Теплый алюминий</a></li>
                                     <li><a href="https://www.eurookna.ru/calculation/">Калькулятор окон</a></li>
-                                    <li><a href="https://www.eurookna.ru/about/">О компании</a></li>
-                                    <li><a href="https://www.eurookna.ru/sotrudnichestvo/">Сотрудничество</a></li>
-                                    <li><a href="https://www.eurookna.ru/vakansii/">Вакансии</a></li>
                                 </ul>
                             </div>
                             <div class="col col--s3">
                                 <h3>Принимаем к оплате</h3>
                                 <p class="footer__pay">
                                     <a>
-                                        <img width="35" src="https://www.eurookna.ru/local/templates/201907/images/mastercard.svg" alt="mastercard">
+                                        <amp-img width="35" height="21" src="https://www.eurookna.ru/local/templates/201907/images/mastercard.svg"></amp-img>
                                     </a>
                                     <a>
-                                        <img width="35" src="https://www.eurookna.ru/local/templates/201907/images/visacard.svg" alt="visacard">
+                                        <amp-img width="35" height="12" src="https://www.eurookna.ru/local/templates/201907/images/visacard.svg"></amp-img>
                                     </a>
                                     <a>
-                                        <img width="35" src="https://www.eurookna.ru/local/templates/201907/images/jcbcard.svg" alt="jcbcard">
+                                        <amp-img width="35" height="27" src="https://www.eurookna.ru/local/templates/201907/images/jcbcard.svg"></amp-img>
                                     </a>
                                     <a>
-                                        <img width="35" src="https://www.eurookna.ru/local/templates/201907/images/mircard.svg" alt="mircard">
+                                        <amp-img width="35" height="10" src="https://www.eurookna.ru/local/templates/201907/images/mircard.svg"></amp-img>
                                     </a>
                                     <a href="https://halvacard.ru/shops/stroitelnye-materialy/EvroOkna">
-                                        <img width="35" src="https://www.eurookna.ru/local/templates/201907/images/halvacard.svg" alt="halvacard">
+                                        <amp-img width="35"  height="12"src="https://www.eurookna.ru/local/templates/201907/images/halvacard.svg"></amp-img>
                                     </a>
                                 </p>
                                 <a class="footer__btn" href="https://www.eurookna.ru/cabinet_sb/">Оплатить заказ</a>
